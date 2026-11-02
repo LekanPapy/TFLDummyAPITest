@@ -1,0 +1,5 @@
+C:\Development\TflDummyJsonRestApiTests\TflDummyJsonRestApiTests\obj\Debug\net6.0\TflDummyJsonRestApiTests.csproj.AssemblyReference.cache
+C:\Development\TflDummyJsonRestApiTests\TflDummyJsonRestApiTests\obj\Debug\net6.0\TflDummyJsonRestApiTests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Development\TflDummyJsonRestApiTests\TflDummyJsonRestApiTests\obj\Debug\net6.0\TflDummyJsonRestApiTests.AssemblyInfoInputs.cache
+C:\Development\TflDummyJsonRestApiTests\TflDummyJsonRestApiTests\obj\Debug\net6.0\TflDummyJsonRestApiTests.AssemblyInfo.cs
+C:\Development\TflDummyJsonRestApiTests\TflDummyJsonRestApiTests\obj\Debug\net6.0\TflDummyJsonRestApiTests.csproj.CoreCompileInputs.cache

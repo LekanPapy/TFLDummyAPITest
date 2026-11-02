@@ -1,0 +1,9 @@
+<Project>
+  <!-- Written by the Reqnroll IDE extension (issue #741): connects this project to the Reqnroll
+       Microsoft.Testing.Platform test-outcome reporter. Project-local and inert when the extension
+       is not installed. Opt out with <ReqnrollIdeSupportDisableMtpReporter>true</ReqnrollIdeSupportDisableMtpReporter>. -->
+  <PropertyGroup>
+    <_ReqnrollIdeMtpReporterBundle>C:\USERS\LEKAN\APPDATA\LOCAL\MICROSOFT\VISUALSTUDIO\17.0_A4175B86\EXTENSIONS\BQYLDQGP.EQ2\MtpReporter\Reqnroll.IdeSupport.TestReporter.MTP.targets</_ReqnrollIdeMtpReporterBundle>
+  </PropertyGroup>
+  <Import Project="$(_ReqnrollIdeMtpReporterBundle)" Condition="Exists('$(_ReqnrollIdeMtpReporterBundle)')" />
+</Project>

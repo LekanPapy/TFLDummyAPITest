@@ -1,33 +1,40 @@
-﻿# TFLDummyAPITest
-DummyJSON API Automation Framework
-Overview
+﻿# DummyJSON API Automation Framework
+
+## Overview
 
 This project is a C# API Automation Framework developed to test the DummyJSON REST API.
 
-The framework has been designed using Behaviour Driven Development (BDD) principles with Reqnroll (SpecFlow successor), NUnit, RestSharp, and FluentAssertions.
+The framework has been designed using Behaviour Driven Development (BDD) principles with Reqnroll, NUnit, RestSharp and FluentAssertions.
 
 The solution validates:
 
-Authentication
-Users
-Products
-Carts
+- Authentication
+- Users
+- Products
+- Carts
 
 The framework executes API requests, validates response status codes, validates response payloads and verifies response attributes as required by the challenge.
 
-Technology Stack
-Technology	PurposeC# (.NET 8)	Programming Language
-Reqnroll	BDD Framework
-NUnit	Test Framework
-RestSharp	API Client
-FluentAssertions	Assertions
-Newtonsoft.Json	JSON Serialization / Deserialization
-GitHub Actions	CI/CD
-Framework Design
+---
+
+# Technology Stack
+
+| Technology | Purpose |
+|------------|---------|
+| C# (.NET 8) | Programming Language |
+| Reqnroll | BDD Framework |
+| NUnit | Test Framework |
+| RestSharp | API Client |
+| FluentAssertions | Assertion Library |
+| Newtonsoft.Json | Serialization / Deserialization |
+
+---
+
+# Framework Design
 
 The framework follows a layered architecture:
 
-Plain Text
+```text
 TflDummyJsonRestApiTests
 │
 ├── Features
@@ -42,292 +49,437 @@ TflDummyJsonRestApiTests
 ├── appsettings.json
 │
 └── README.md
-Features Layer
+```
 
-Contains all Gherkin scenarios.
+---
+
+## Features Layer
+
+Contains all Gherkin scenarios that define application behaviour.
 
 Example:
 
-Cucumber
+```gherkin
 Scenario: Authenticate user and store access token
-Given a valid user
-When I authenticate using the provided authentication endpoint
-Then the authentication is successful and an access token is returned
-Step Definitions Layer
+    Given a valid user
+    When I authenticate using the provided authentication endpoint
+    Then the authentication is successful and an access token is returned
+```
 
-Contains all automation logic that maps to Gherkin steps.
+---
+
+## Step Definitions Layer
+
+Contains the implementation of each Gherkin step and all validations.
 
 Example:
 
-C#
+```csharp
 [When(@"I create a cart")]
 public async Task WhenICreateACart()
 {
-_testContext.AddCartResponse =
-await _cartService.AddCart(
-_testContext.AddCartRequest);
+    _testContext.AddCartResponse =
+        await _cartService.AddCart(
+            _testContext.AddCartRequest);
 }
-Service Layer
+```
 
-Handles all interactions with the API.
+---
+
+## Service Layer
+
+Responsible for interacting with the API endpoints.
 
 Example:
 
-C#
-public async Task<LoginResponse> Login(LoginRequest requestBody)
+```csharp
+public async Task<LoginResponse> Login(
+    LoginRequest requestBody)
 {
-var request =
-new RestRequest("/auth/login", Method.Post);
- 
-request.AddJsonBody(requestBody);
- 
-var response =
-await SendAsync(request);
- 
-return JsonConvert.DeserializeObject<LoginResponse>(
-response.Content!)!;
-}
-Models Layer
+    var request =
+        new RestRequest("/auth/login", Method.Post);
 
-Contains strongly typed request and response models.
+    request.AddJsonBody(requestBody);
+
+    var response =
+        await SendAsync(request);
+
+    return JsonConvert.DeserializeObject<LoginResponse>(
+        response.Content!)!;
+}
+```
+
+---
+
+## Models Layer
+
+Contains strongly typed request and response models used for API communication.
 
 Example:
 
-C#
+```csharp
 public class LoginRequest
 {
-[JsonProperty("username")]
-public string Username { get; set; }
- 
-[JsonProperty("password")]
-public string Password { get; set; }
+    [JsonProperty("username")]
+    public string Username { get; set; }
+
+    [JsonProperty("password")]
+    public string Password { get; set; }
 }
+```
 
-Using strongly typed models improves maintainability and readability while avoiding the use of dynamic objects.
+Strongly typed models improve:
 
-TestData Layer
+- Maintainability
+- Readability
+- Type Safety
+- Reusability
 
-Stores reusable test data outside of step definitions.
+---
+
+## Test Data Layer
+
+Contains reusable test data separated from test logic.
 
 Example:
 
-C#
+```csharp
 public static class CartTestData
 {
-public static AddCartRequest CreateCart()
-{
-return new AddCartRequest
-{
-UserId = 1
-};
+    public static AddCartRequest CreateCart()
+    {
+        return new AddCartRequest
+        {
+            UserId = 1
+        };
+    }
 }
-}
+```
 
-This prevents test data from being hard coded inside automation logic.
+This approach prevents hard-coded values from being embedded within test scripts.
 
-TestContext
+---
 
-A custom TestContext class is used to share data between steps within a scenario.
+## TestContext
+
+A shared context object is used to pass data between steps within the same scenario.
 
 Example:
 
-C#
+```csharp
 public class TestContext
 {
-public string AccessToken { get; set; }
- 
-public LoginResponse LoginResponse { get; set; }
- 
-public AddUserResponse AddUserResponse { get; set; }
- 
-public AddCartResponse AddCartResponse { get; set; }
-}
-Hooks
+    public string AccessToken { get; set; }
 
-Authentication is handled through a BeforeScenario Hook.
+    public LoginResponse LoginResponse { get; set; }
+
+    public AddUserResponse AddUserResponse { get; set; }
+
+    public AddCartResponse AddCartResponse { get; set; }
+}
+```
+
+---
+
+## Hooks
+
+Authentication is centralised using a BeforeScenario Hook.
 
 Example:
 
-C#
+```csharp
 [BeforeScenario("@auth")]
 public async Task Authenticate()
 {
-var response =
-await _authService.Login(request);
- 
-_testContext.AccessToken =
-response.AccessToken;
+    var response =
+        await _authService.Login(request);
+
+    _testContext.AccessToken =
+        response.AccessToken;
 }
+```
 
-This guarantees that all authenticated scenarios are executed with a valid access token.
+This ensures that every authenticated scenario begins with a valid access token.
 
-Configuration
+---
+
+# Configuration Management
 
 Configuration values are externalised into:
 
-Plain Text
+```text
 appsettings.json
+```
 
 Example:
 
-JSON
+```json
 {
-"BaseUrl": "https://dummyjson.com",
- 
-"AuthSettings": {
-"Username": "emilys",
-"Password": "emilyspass",
-"ExpiresInMins": 30
+  "BaseUrl": "https://dummyjson.com",
+  "AuthSettings": {
+    "Username": "emilys",
+    "Password": "emilyspass",
+    "ExpiresInMins": 30
+  }
 }
-}
+```
 
-This removes credentials from automation code.
+Benefits:
 
-Test Coverage
-Authentication
-Scenario 1
+- Credentials are not hard-coded.
+- Configuration can be changed without code changes.
+- Easier environment management.
 
-Authenticate a user and store an access token.
+---
 
-Validations:
+# Test Coverage
 
-Status Code
-Access Token returned
-User Id returned
-Scenario 2
+## Authentication
 
-Get current authenticated user.
+### Scenario 1 - Authenticate User and Store Access Token
 
 Validations:
 
-Id
-First Name
-Last Name
-Email Address
-Users
-Scenario 3
+- HTTP 200 returned
+- Access Token generated
+- User Id returned
 
-Verify users with red hair.
+### Scenario 2 - Validate Current Authenticated User
 
 Validations:
 
-Count of users with red hair
-Count greater than zero
-Scenario 4
+- Id returned
+- First Name returned
+- Last Name returned
+- Email returned
 
-Validate red-haired user details.
+---
 
-Validations:
+## Users
 
-User Id
-First Name
-Last Name
-Hair Colour
-Scenario 5
-
-Add a new user.
+### Scenario 3 - Verify and validate numbers of Users with Red Hair
 
 Validations:
 
-User created successfully
-First Name
-Last Name
-Age
-Gender
-Hair Colour
-Hair Type
-Address
-Products
-Scenario 6
+- User Id
+- First Name
+- Last Name
+- Hair Colour
+- - Retrieve all users
+- Count red-haired users
+- Verify count is greater than zero
 
-Verify price of iPhone 13 Pro.
+### Scenario 4 - Add New User
 
 Validations:
 
-Product exists
-Product price returned
-Scenario 7
+- User created successfully
+- First Name
+- Last Name
+- Age
+- Gender
+- Hair Colour
+- Hair Type
+- Address
 
-Retrieve only the 15th product using pagination.
+---
+
+## Products
+
+### Scenario 5 - Verify iPhone 13 Pro Price
+
+Validations:
+
+- Product returned
+- Product title matches search criteria
+- Product price returned
+
+### Scenario 6 - Retrieve and Validate the 15th Product Using Pagination
 
 Request:
 
-HTTP
+```http
 GET /products?limit=1&skip=14
+```
 
 Validations:
 
-Product Id
-Product Title
-Product Price
-Only one product returned
-Scenario 8
+- Product Id = 15
+- Product Title = Wooden Bathroom Sink With Mirror
+- Product Price = 799.99
+- Only one product returned
 
-Update Product ID 121.
-
-Validations:
-
-Product updated successfully
-Updated title returned in response
-Cart
-Scenario 9
-
-Add 5 products to a cart.
+### Scenario 7 - Update Product 121
 
 Validations:
 
-Cart created successfully
-Total discount percentage calculated correctly
+- Product updated successfully
+- Response contains updated product title
+- Product Id remains 121
 
-Note:
+---
 
-DummyJSON does not provide a cart-level discount percentage total. Therefore the framework calculates the total discount percentage by summing the individual product discount percentages returned in the response.
+## Carts
 
-Scenario 10
-
-Delete a cart.
+### Scenario 8 - Add Five Products to a Cart
 
 Validations:
 
-Cart marked as deleted
-Correct cart id returned
-Deletion timestamp returned
-Running Tests
+- Cart created successfully
+- Cart contains 5 products
+- Total discount percentage calculated correctly
 
-Restore packages:
+Example Calculation:
 
-Shell
+```csharp
+var totalDiscountPercentage =
+    response.Products.Sum(
+        x => x.DiscountPercentage);
+```
+
+### Scenario 9 - Delete Cart
+
+Validations:
+
+- Correct cart deleted
+- Cart marked as deleted
+- Deletion timestamp returned
+
+---
+
+# Running the Tests
+
+### Restore Packages
+
+```bash
 dotnet restore
- 
+```
 
-Build solution:
+### Build Solution
 
-Shell
+```bash
 dotnet build
+```
 
-Execute tests:
+### Execute Tests
 
-Shell
+```bash
 dotnet test
-CI/CD
+```
 
-A GitHub Actions pipeline has been included to automatically execute tests on each push and pull request.
+### Execute Specific Feature
 
-Pipeline actions:
+```bash
+dotnet test --filter Category=auth
+```
 
-YAML
+---
+
+# Continuous Integration
+
+GitHub Actions pipeline executes:
+
+```yaml
 dotnet restore
 dotnet build
 dotnet test
- 
-Development Decisions
+```
 
-The following design decisions were made:
+on:
 
-Service Layer Pattern used to separate test logic from API interactions.
-Strongly Typed Models used instead of dynamic objects.
-Test Data separated from automation logic.
-Authentication centralised using Hooks.
-TestContext used to share data between steps.
-FluentAssertions used for expressive assertions.
-Configuration externalised from source code.
+- Push
+- Pull Request
+
+---
+
+# Framework Design Decisions
+
+The following design decisions were implemented:
+
+### Service Layer Pattern
+
+Separates API interaction from test logic.
+
+### Strongly Typed Models
+
+Eliminates use of dynamic objects.
+
+### Shared TestContext
+
+Allows data sharing across steps.
+
+### Hook-Based Authentication
+
+Avoids duplicated authentication logic.
+
+### TestData Separation
+
+Keeps payload data outside of test implementation.
+
+### FluentAssertions
+
+Provides readable and maintainable assertions.
+
+### Configuration Management
+
+Separates configuration from source code.
+
+---
+
+# Assumptions
+
+DummyJSON is a stateless mock API.
+
+Write operations including:
+
+- POST
+- PUT
+- PATCH
+- DELETE
+
+are simulated only and are not persisted.
+
+Therefore tests validate:
+
+- Request Structure
+- Response Status Codes
+- Response Payloads
+- Response Attributes
+
+and do not attempt to verify persistence through subsequent requests.
+
+---
+
+# Future Improvements
+
+Potential enhancements include:
+
+- Serilog Logging
+- Extent Reports
+- Parallel Test Execution
+- Azure DevOps Pipeline
+- Environment-Specific Configuration
+- Contract Testing
+- Retry Policies
+- API Test Data Builders
+
+---
+
+# AI Usage Disclaimer
+
+AI tools were used to assist with:
+
+- Framework design guidance
+- Code scaffolding
+- Request and response model generation
+- Documentation drafting
+
+All generated code was reviewed, tested, modified and validated before submission.
+
+---
+
+# Author
+
+**Lekan Tairu **
+
+API Automation Framework created as part of the DummyJSON REST API Automation Challenge.

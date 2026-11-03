@@ -93,19 +93,16 @@ Responsible for interacting with the API endpoints.
 Example:
 
 ```csharp
-public async Task<LoginResponse> Login(
-    LoginRequest requestBody)
-{
-    var request =
-        new RestRequest("/auth/login", Method.Post);
+ public async Task<RestResponse> Login(LoginRequest loginRequest)
+    {
+       var request = new RestRequest(
+          
+         "/auth/login", Method.Post);
 
-    request.AddJsonBody(requestBody);
-
-    var response =
-        await SendAsync(request);
-
-    return JsonConvert.DeserializeObject<LoginResponse>(
-        response.Content!)!;
+       request.AddJsonBody(loginRequest);
+           
+       return await SendAsync(request);
+        }
 }
 ```
 

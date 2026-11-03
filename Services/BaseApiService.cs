@@ -1,5 +1,6 @@
 ﻿using RestSharp;
 using TflDummyJsonRestApiTests.Helpers;
+using TflDummyJsonRestApiTests.Reporting;
 
 namespace TflDummyJsonRestApiTests.Services
 {
@@ -14,7 +15,13 @@ namespace TflDummyJsonRestApiTests.Services
 
         protected async Task<RestResponse> SendAsync(RestRequest request)
         {
-            return await Client.ExecuteAsync(request);
+            ApiReportLogger.LogRequest(request);
+
+            var response = await Client.ExecuteAsync(request);
+
+            ApiReportLogger.LogResponse(response);
+
+            return response;
         }
     }
 }

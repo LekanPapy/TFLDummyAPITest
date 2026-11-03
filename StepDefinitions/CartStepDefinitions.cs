@@ -34,13 +34,21 @@ namespace TflDummyJsonRestApiTests.StepDefinitions
         [When("I create a cart")]
         public async Task WhenICreateACart()
         {
-            _testContext.AddCartResponse = await _cartService.AddCart(_testContext.AddCartRequest);
+            _testContext.ApiResponse = await _cartService.AddCart(_testContext.AddCartRequest);
+
+            ApiAssertions.AssertCreated(_testContext.ApiResponse);
+
+            _testContext.AddCartResponse = ResponseHelper.Parse<AddCartResponse>(_testContext.ApiResponse);
         }
 
         [When("I delete the cart")]
         public async Task WhenIDeleteTheCart()
         {
-            _testContext.DeleteCartResponse = await _cartService.DeleteCart(_testContext.CartId);
+            _testContext.ApiResponse = await _cartService.DeleteCart(_testContext.CartId);
+
+            ApiAssertions.AssertOk(_testContext.ApiResponse);
+
+            _testContext.DeleteCartResponse = ResponseHelper.Parse<DeleteCartResponse>(_testContext.ApiResponse);
         }
 
         [Then("the discount percentage total should be correct")]

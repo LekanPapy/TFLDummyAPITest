@@ -1,14 +1,17 @@
 ﻿
 
+using RestSharp;
 using TflDummyJsonRestApiTests.Models;
 
 namespace TflDummyJsonRestApiTests.Helpers
 {
     public class TestContext
     {
-        public string? AccessToken { get; set; }
+        public string AccessToken { get; set; }
 
         public LoginResponse LoginResponse { get; set; }
+
+        public LoginRequest LoginRequest { get; set; }
 
         public AuthenticatedUserResponse AuthenticatedUser { get; set; }
 
@@ -37,5 +40,8 @@ namespace TflDummyJsonRestApiTests.Helpers
         public int ProductId { get; set; }
 
         public UpdateProductRequest UpdateProductRequest { get; set; }
+
+        public RestResponse ApiResponse { get; set; }
+
     }
 }

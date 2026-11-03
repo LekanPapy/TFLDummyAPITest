@@ -9,8 +9,8 @@ Scenario: [Verify Price of iPhone 13 Pro]
 	Then the response should contain the correct price for "iPhone 13 Pro"
 
 Scenario: [Retrieve and Validate only the 15th Product Using Pagination]
-	When I request the 15th product
-	Then Product should have ID 15, Price 799.99 and title be validated to be "Wooden Bathroom Sink With Mirror"
+	When I request the 15th product with the pagination request function
+	Then the 15th product should match the expected product details
 
 
 Scenario: [Update Product 121]

@@ -12,6 +12,6 @@ namespace TflDummyJsonRestApiTests.Models
         [JsonProperty("products")]
         public List<Product> Products { get; set; } = new();
         public decimal Price { get; set; }
-       // public int Count { get;  set; }
+    
     }
 }

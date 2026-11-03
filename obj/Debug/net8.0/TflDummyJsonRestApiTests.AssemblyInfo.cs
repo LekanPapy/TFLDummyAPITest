@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TflDummyJsonRestApiTests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8846adb7f956b5c932ac2ade8ed7eebce20c450b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2a218f29cebff425e6334759de9b1991f87d4414")]
 [assembly: System.Reflection.AssemblyProductAttribute("TflDummyJsonRestApiTests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TflDummyJsonRestApiTests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

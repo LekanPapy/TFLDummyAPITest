@@ -2,6 +2,10 @@ using FluentAssertions;
 using Reqnroll;
 using TflDummyJsonRestApiTests.Helpers;
 using TflDummyJsonRestApiTests.Services;
+using TflDummyJsonRestApiTests.TestData;
+using Newtonsoft.Json;
+using TflDummyJsonRestApiTests.Models;
+using System.Net;
 
 namespace TflDummyJsonRestApiTests.StepDefinitions
 {
@@ -21,13 +25,7 @@ namespace TflDummyJsonRestApiTests.StepDefinitions
         public void GivenISearchForTheProduct(string productName)
         {
             _testContext.ProductName = productName;
-      
-        }
 
-        [Given("I have a list of products with pagination")]
-        public void GivenIHaveAListOfProductsWithPagination()
-        {
-            
         }
 
         [Given("I want to update the product with ID {int}")]
@@ -35,78 +33,87 @@ namespace TflDummyJsonRestApiTests.StepDefinitions
         {
             _testContext.ProductId = productId;
 
-            _testContext.UpdateProductRequest = new Models.UpdateProductRequest
-            {
-                Title = "Updated Product Title"
-            };
+            _testContext.UpdateProductRequest = ProductTestData.GetUpdatedProduct();
+            
         }
 
         [When("I request the product details")]
         public async Task WhenIRequestTheProductDetails()
         {
-            _testContext.ProductResponse = await _productsService.SearchProduct(_testContext.ProductName);
-        }
+            _testContext.ApiResponse = await _productsService.SearchProduct(_testContext.ProductName);
 
-        [When("I request the 15th product")]
-        public async Task WhenIRequestThe15thProduct()
-        {
-            _testContext.ProductResponse = await _productsService.GetFifteenthProduct();
+            ApiAssertions.AssertOk(_testContext.ApiResponse);
 
+            _testContext.ProductResponse = ResponseHelper.Parse<ProductResponse>(_testContext.ApiResponse);
         }
 
         [When("I submit a request to update the product details with the product update payload:")]
         public async Task WhenISubmitARequestToUpdateTheProductDetailsWithTheProductUpdatePayload()
         {
-            _testContext.Product = await _productsService.UpdateProduct(
+            _testContext.ApiResponse = await _productsService.UpdateProduct(
                 _testContext.ProductId, _testContext.UpdateProductRequest);
+          
+            ApiAssertions.AssertOk(_testContext.ApiResponse);
+
+            Console.WriteLine(_testContext.ApiResponse.Content);
+
+            _testContext.Product = ResponseHelper.Parse<Product>(_testContext.ApiResponse);
         }
 
         [Then("the response should contain the correct price for {string}")]
         public void ThenTheResponseShouldContainTheCorrectPriceFor(string productName)
         {
-            var product = _testContext.ProductResponse.Products.FirstOrDefault(p => p.Title.Equals(productName, StringComparison.OrdinalIgnoreCase));
-            product.Should().NotBeNull();
+            var product = _testContext.ProductResponse.Products.FirstOrDefault(p => 
 
-            product!.Price.Should().BeGreaterThan(0);
-            product.Price.Should().Be(1099.99m, because: $"the expected price for {productName} is 1099.99");
-        
-        }
-
-        [Then("Product ID, Name, and Price should be validated against expected values")]
-        public void ThenProductIDNameAndPriceShouldBeValidatedAgainstExpectedValues()
-        {
-            var product = _testContext.ProductResponse.Products.First();
+            p.Title.Equals(productName, StringComparison.OrdinalIgnoreCase));
             
             product.Should().NotBeNull();
 
-            product.Id.Should().Be(121);
+            product!.Price.Should().BeGreaterThan(0);
 
-            product.Price.Should().BeGreaterThan(0);
+            product.Price.Should().Be(ProductTestData.ExpectedIphone13ProPrice, 
 
+                because: $"the expected price for {productName} is 1099.99");
+        
         }
+
 
         [Then("the product should be updated successfully")]
         public void ThenTheProductShouldBeUpdatedSuccessfully()
         {
             _testContext.Product.Should().NotBeNull();
 
-            _testContext.Product.Title.Should().Be(_testContext.UpdateProductRequest.Title);
+            _testContext.Product.Id.Should().Be(ProductTestData.ExpectedUpdatedProductId);
 
-            _testContext.Product.Id.Should().Be(121);
+            _testContext.Product.Title.Should().Be(_testContext.UpdateProductRequest.Title);
         }
 
-        [Then("Product should have ID {int}, Price {float} and title be validated to be {string}")]
-        public void ThenProductShouldHaveIDPriceAndTitleBeValidatedToBe(int expectedProductId, decimal expectedPrice, string expectedTitle)
+        [When("I request the 15th product with the pagination request function")]
+        public async Task WhenIRequestThe15thProductWithThePaginationRequestFunction()
         {
-            _testContext.ProductResponse.Should().NotBeNull();
+            _testContext.ApiResponse =
+                await _productsService.GetFifteenthProduct();
+             
+            ApiAssertions.AssertOk(_testContext.ApiResponse);
 
+            _testContext.ProductResponse = ResponseHelper.Parse<ProductResponse>(_testContext.ApiResponse);
+
+        }
+
+        [Then("the 15th product should match the expected product details")]
+        public void ThenThe15thProductShouldMatchTheExpectedProductDetails()
+        {
+  
             _testContext.ProductResponse.Products.Should().HaveCount(1);
 
             var product = _testContext.ProductResponse.Products.First();
-            product.Id.Should().Be(expectedProductId);
-            product.Price.Should().Be(expectedPrice);
-            product.Title.Should().Be(expectedTitle);
-        }
+
+            product.Id.Should().Be(ProductTestData.ExpectedFifteenthProductId);
+
+            product.Price.Should().Be(ProductTestData.ExpectedFifteenthProductPrice);
+
+            product.Title.Should().Be(ProductTestData.ExpectedFifteenthProductTitle);
+        }  
 
 }
 }

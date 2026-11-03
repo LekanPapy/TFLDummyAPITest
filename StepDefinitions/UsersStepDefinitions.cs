@@ -1,6 +1,7 @@
 using FluentAssertions;
 using Reqnroll;
 using TflDummyJsonRestApiTests.Helpers;
+using TflDummyJsonRestApiTests.Models;
 using TflDummyJsonRestApiTests.Services;
 using TflDummyJsonRestApiTests.TestData;
 
@@ -20,13 +21,17 @@ namespace TflDummyJsonRestApiTests.StepDefinitions
         [Given("I want to retrieve all users with red hair")]
         public async Task GivenIWantToRetrieveAllUsersWithRedHair()
         {
-          _testContext.UserResponse = await _usersService.GetAllUsers();
+          _testContext.ApiResponse = await _usersService.GetAllUsers();
+
+            ApiAssertions.AssertOk(_testContext.ApiResponse);
+
+            _testContext.UserResponse = ResponseHelper.Parse<UserResponse>(_testContext.ApiResponse);
         }
 
         [Given("I want to add a new user with a user payload")]
         public void GivenIWantToAddANewUserWithAUserPayload()
         {
-            _testContext.AddUserRequest = (Models.AddUserRequest)AddNewUserTestData1.CreateUser();
+            _testContext.AddUserRequest = (AddUserRequest)AddNewUserTestData1.CreateUser();
         }
 
         [When("I request the list of users with red hair")]
@@ -42,7 +47,11 @@ namespace TflDummyJsonRestApiTests.StepDefinitions
         [When("I submit the request to add a new user")]
         public async Task WhenISubmitTheRequestToAddANewUser()
         {
-            _testContext.AddUserResponse = await _usersService.AddUser(_testContext.AddUserRequest);
+            _testContext.ApiResponse = await _usersService.AddUser(_testContext.AddUserRequest);
+
+            ApiAssertions.AssertCreated(_testContext.ApiResponse);
+
+            _testContext.AddUserResponse = ResponseHelper.Parse<AddUserResponse>(_testContext.ApiResponse);
         }
 
         [Then("the user should be added successfully")]

@@ -6,7 +6,7 @@ namespace TflDummyJsonRestApiTests.Services
 {
     public class CartService : BaseApiService
     {
-        public async Task<AddCartResponse> AddCart(
+        public async Task<RestResponse> AddCart(
        AddCartRequest payload)
         {
             var request =
@@ -16,21 +16,18 @@ namespace TflDummyJsonRestApiTests.Services
 
             request.AddJsonBody(payload);
 
-            var response = await SendAsync(request);
-            return JsonConvert.DeserializeObject<AddCartResponse>(
-                response.Content!)!;
+            return await SendAsync(request);
         }
 
-        public async Task<DeleteCartResponse> DeleteCart(
+        public async Task<RestResponse> DeleteCart(
         int cartId)
         {
             var  request = new RestRequest(
                 $"/carts/{cartId}",
                 Method.Delete);
-            var response = await SendAsync(request);
+            return await SendAsync(request);
 
-            return JsonConvert.DeserializeObject<DeleteCartResponse>(
-                response.Content!)!;
+           
         }
 
     }

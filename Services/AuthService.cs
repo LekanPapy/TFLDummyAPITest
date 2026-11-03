@@ -6,24 +6,16 @@ namespace TflDummyJsonRestApiTests.Services
 {
     public class AuthService : BaseApiService
     {
-        public async Task<LoginResponse> Login(LoginRequest loginRequest)
+        public async Task<RestResponse> Login(LoginRequest loginRequest)
         {
-            var request = new RestRequest("/auth/login", Method.Post);
+            var request = new RestRequest(
+                "/auth/login", Method.Post);
 
-            request.AddJsonBody(new
-            {
-                username = loginRequest.Username,
-                password = loginRequest.Password,
-                expiresInMins = loginRequest.ExpiresInMins
-            });
-
-            var response = await SendAsync(request);
-
-            return JsonConvert.DeserializeObject<LoginResponse>(
-                response.Content!);
-
+            request.AddJsonBody(loginRequest);
+           
+              return await SendAsync(request);
         }
-        public async Task<AuthenticatedUserResponse> GetCurrentUser(string token)
+        public async Task<RestResponse> GetCurrentUser(string token)
         {
             var request = new RestRequest("/auth/me", Method.Get);
 
@@ -31,10 +23,8 @@ namespace TflDummyJsonRestApiTests.Services
                 "Authorization",
                 $"Bearer {token}");
 
-            var response = await SendAsync(request);
+            return await SendAsync(request);
 
-            return JsonConvert.DeserializeObject<AuthenticatedUserResponse>(
-                response.Content!)!;
         }
     }
 }

@@ -23,15 +23,18 @@ namespace TflDummyJsonRestApiTests.Hooks
             var authSettings =
         ConfigurationHelper.AuthSettings;
 
-            var loginRequest = new LoginRequest
+            var request = new LoginRequest
             {
                 Username = authSettings.Username,
                 Password = authSettings.Password,
                 ExpiresInMins = authSettings.ExpiresInMins
             };
 
+            var response =
+                  await _authService.Login(request);
+
             var loginResponse =
-                await _authService.Login(loginRequest);
+                ResponseHelper.Parse<LoginResponse>(response);
 
             _testContext.AccessToken =
                 loginResponse.AccessToken;

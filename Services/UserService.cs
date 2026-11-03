@@ -6,7 +6,7 @@ namespace TflDummyJsonRestApiTests.Services
 {
     public class UserService : BaseApiService
     {
-        public async Task<UserResponse> GetAllUsers()
+        public async Task<RestResponse> GetAllUsers()
         {
             var request =
             new RestRequest(
@@ -16,11 +16,10 @@ namespace TflDummyJsonRestApiTests.Services
             var response =
                 await SendAsync(request);
 
-            return JsonConvert.DeserializeObject<UserResponse>(
-                response.Content!)!;
+            return response;
         }
 
-        public async Task<AddUserResponse> AddUser(
+        public async Task<RestResponse> AddUser(
             AddUserRequest payload)
         {
             var request =
@@ -29,10 +28,10 @@ namespace TflDummyJsonRestApiTests.Services
                     Method.Post);
 
             request.AddJsonBody(payload);
-            var response = await SendAsync(request);
 
-            return JsonConvert.DeserializeObject<AddUserResponse>(
-        response.Content!)!;
+            return await SendAsync(request);
+
         }
+            
     }
 }

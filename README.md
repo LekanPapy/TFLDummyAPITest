@@ -78,9 +78,15 @@ Example:
 [When(@"I create a cart")]
 public async Task WhenICreateACart()
 {
-    _testContext.AddCartResponse =
-        await _cartService.AddCart(
-            _testContext.AddCartRequest);
+    _testContext.ApiResponse = 
+    
+    await _cartService.AddCart(_testContext.AddCartRequest);
+
+     ApiAssertions.AssertCreated(_testContext.ApiResponse);
+
+      _testContext.AddCartResponse = 
+      
+      ResponseHelper.Parse<AddCartResponse>(_testContext.ApiResponse);
 }
 ```
 
